@@ -3,7 +3,7 @@ import os
 import subprocess
 from collections import Counter
 
-import helpers
+from helpers import *
 
 
 def repeated_names(list_of_filepaths):
@@ -24,7 +24,7 @@ def repeated_names(list_of_filepaths):
     """
     # traverse filenames
     filenames = map(
-        lambda filepath: helpers.extract_filename(filepath, include_extension=True),
+        lambda filepath: extract_filename(filepath, include_extension=True),
         list_of_filepaths,
     )
     filename_counts = Counter(filenames).most_common()
@@ -51,7 +51,7 @@ def get_data_source_files(data_source, file_list, sort=True):
     []
 
     """
-    jsons_and_csvs = helpers.filter_json_and_csv(file_list)
+    jsons_and_csvs = filter_json_and_csv(file_list)
     results = list(
         filter(lambda _file: os.path.join(data_source, "") in _file, jsons_and_csvs)
     )
@@ -79,7 +79,7 @@ def get_file_format(data_source, file_list):
     ValueError: Only JSON and CSV files should be uploaded
     """
     # only accept JSON and CSVs for now
-    jsons_and_csvs = helpers.filter_json_and_csv(file_list)
+    jsons_and_csvs = filter_json_and_csv(file_list)
 
     data_source_files = get_data_source_files(data_source, jsons_and_csvs, sort=True)
 
@@ -101,8 +101,8 @@ def return_folder_name(filepath):
     :param filepath: string
     :return: string
     """
-    filename = helpers.extract_filename(filepath, include_extension=True)
-    return helpers.filename_to_folder_name(filename)
+    filename = extract_filename(filepath, include_extension=True)
+    return filename_to_folder_name(filename)
 
 
 def convert_to_newline_delimited_json(filepath, jq_command="jq -c '.[]'"):
@@ -113,7 +113,7 @@ def convert_to_newline_delimited_json(filepath, jq_command="jq -c '.[]'"):
     :return: string
     """
     command = f"{jq_command} {filepath}"
-    if not helpers.is_ndjson_file(filepath):
+    if not is_ndjson_file(filepath):
         ndjson_bytes = subprocess.check_output(command, shell=True)
         ndjson_str = ndjson_bytes.decode().strip()
         return ndjson_str
