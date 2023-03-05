@@ -205,19 +205,18 @@ def filter_json_and_csv(file_list):
     return list(filter(lambda f: bool(re.search("(.json|.csv)", f)), file_list))
 
 
-def is_ndjson_file(filepath):
+def is_ndjson_file(file_content):
     """
-    Given a filepath, determines if that file is a valid newline-delimited JSON.
+    Given a file content, determines if that file is a valid newline-delimited JSON.
 
     :param filepath: string
     :return: bool
     """
-    with open(filepath, "r") as f:
-        for line in f:
-            try:
-                json.loads(line)
-            except ValueError:
-                return False
+    for line in file_content:
+        try:
+            json.loads(line)
+        except ValueError:
+            return False
     return True
 
 
