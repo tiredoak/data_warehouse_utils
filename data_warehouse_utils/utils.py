@@ -3,7 +3,7 @@ import os
 import subprocess
 from collections import Counter
 
-from helpers import *
+from data_warehouse_utils.helpers import *
 
 
 def repeated_names(list_of_filepaths):
