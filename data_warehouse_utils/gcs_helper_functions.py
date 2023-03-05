@@ -37,12 +37,12 @@ def read_blob_from_gcs(bucket_name, file_name):
 
     :param bucket_name: string
     :param file_name: string
-    :return: string
+    :return: bytes
     """
     client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(file_name)
-    return blob.download_as_text()
+    return blob.download_as_bytes()
 
 
 def copy_blob(
