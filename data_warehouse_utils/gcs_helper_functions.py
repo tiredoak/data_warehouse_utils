@@ -31,16 +31,18 @@ def list_blobs(bucket_name):
     return list(blobs)
 
 
-def read_blob_from_gcs(blob):
+def read_blob_from_gcs(bucket_name, file_name):
     """
-    Given a blob name, returns its contents as a string.
+    Given a bucket and a file name, returns the file contents as a string.
 
     :param bucket_name: string
-    :return: list
+    :param file_name: string
+    :return: string
     """
     client = storage.Client()
-    file_contents = blob.download_as_string()
-    return file_contents
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file_name)
+    return blob.download_as_text()
 
 
 def copy_blob(
