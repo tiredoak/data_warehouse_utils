@@ -60,5 +60,24 @@ def parse_message(s):
     return {"timestamp": timestamp, "author": author, "content": content}
 
 
+def last_processed_message(filepath):
+    with open(filepath, "r") as f:
+        # Use seek() to move the file pointer to the end of the file
+        f.seek(0, 2)
+        # Use tell() to get the current position of the file pointer
+        pos = f.tell()
+        # Start reading the file backwards, one character at a time
+        # until we find the last newline character
+        while pos > 0:
+            pos -= 1
+            f.seek(pos, 0)
+            if f.read(1) == "\n":
+                break
+        # Use readline() to read the last line of the file
+        last_line = f.readline().strip()
+
+    return json.loads(last_line)
+
+
 if __name__ == "__main__":
     doctest.testmod()
