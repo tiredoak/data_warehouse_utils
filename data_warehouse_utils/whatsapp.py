@@ -2,7 +2,8 @@ import doctest
 import json
 import re
 
-filepath = "scripts/_chat.txt"
+input = "data_warehouse_utils/_chat.txt"
+output = "data_warehouse_utils/chat_output.json"
 
 
 def is_complete_message(s):
@@ -80,4 +81,14 @@ def last_processed_message(filepath):
 
 
 if __name__ == "__main__":
+    print(count_messages(input))
+    data = last_processed_message(output)
+    print(data["content"])
+
+    new_message = {
+        "timestamp": "2021-05-05 11:49:35",
+        "author": "Miguel",
+        "content": "New last message",
+    }
+
     doctest.testmod()

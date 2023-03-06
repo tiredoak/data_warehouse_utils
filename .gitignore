@@ -40,4 +40,6 @@ pip-wheel-metadata
 
 poetry/core/*
 
+chat_output.json
+_chat.txt
 .envrc
