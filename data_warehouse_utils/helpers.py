@@ -2,6 +2,7 @@ import doctest
 import json
 import os
 import re
+import unicodedata
 from pathlib import Path
 
 
@@ -101,6 +102,9 @@ def filename_to_folder_name(filename):
 
     >>> filename_to_folder_name("StreamingHistory1.json")
     'streaming_history'
+
+    >>> filename_to_folder_name("_chat.txt")
+    'chat'
     """
     snake_case = camel_to_snake_case(filename)
     sanitized = clean_filename(snake_case)
@@ -108,7 +112,10 @@ def filename_to_folder_name(filename):
     if filename == ".DS_Store":
         return ""
 
-    pattern = r"(^[a-zA-Z_0-9-]*[a-zA-Z]\d*)(?=_*\d*\.(?:csv|json))"
+    if filename.startswith("_"):
+        sanitized = sanitized[1:]
+
+    pattern = r"(^[a-zA-Z_0-9-]*[a-zA-Z]\d*)(?=_*\d*\.(?:csv|json|txt))"
     match = re.match(pattern, sanitized).group(1)
 
     # clean files like streaming_history0
@@ -219,6 +226,50 @@ def is_ndjson_file(file_bytes):
         except ValueError:
             return False
     return True
+
+
+def replace_diacritics(text):
+    """
+    Given a raw filepath in GCS for a WhatsApp chat, return the pre_processed filename
+
+    :param gcs_raw_filepath: string
+    :return: string
+
+    >>> replace_diacritics("Gonçalo Miranda")
+    'Goncalo Miranda'
+
+    >>> replace_diacritics("António Bênção")
+    'Antonio Bencao'
+    """
+    # Normalize the text using Unicode Normalization Form D (NFD)
+    normalized = unicodedata.normalize("NFD", text)
+
+    # Replace any characters whose category is "Mn" (Mark, Nonspacing) with an empty string
+    cleaned = "".join(c for c in normalized if not unicodedata.category(c) == "Mn")
+    return cleaned
+
+
+def pre_process_whatsapp_filename(gcs_raw_filepath):
+    """
+    Given a raw filepath in GCS for a WhatsApp chat, return the pre_processed filename
+
+    :param gcs_raw_filepath: string
+    :return: string
+
+    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - Gonçalo Miranda/_chat.txt")
+    'whatsapp/chats/goncalo_miranda/chat.json'
+
+    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - António Bênção/_chat.txt")
+    'whatsapp/chats/antonio_bencao/chat.json'
+    """
+    pattern = r"whatsapp\/chats\/WhatsApp\WChat\W-\W(.*)\/.*(chat)\.txt"
+    matches = re.match(pattern, gcs_raw_filepath)
+    entity = matches.group(1)
+    filename = matches.group(2)
+
+    entity = replace_diacritics(entity)
+    entity = clean_filename(entity.lower())
+    return os.path.join("whatsapp", "chats", entity, filename + ".json")
 
 
 if __name__ == "__main__":
