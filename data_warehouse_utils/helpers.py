@@ -5,6 +5,9 @@ import re
 import unicodedata
 from pathlib import Path
 
+import emoji
+import regex
+
 
 def camel_to_snake_case(s):
     """
@@ -41,9 +44,21 @@ def clean_filename(filename):
 
     >>> clean_filename("ContinuumSectionResponseV1_0.json")
     'ContinuumSectionResponseV1_0.json'
+
+    >>> clean_filename("🐮.json")
+    '🐮.json'
     """
-    no_spaces = str(filename).strip().replace(" ", "_")
-    return re.sub(r"(?u)[^-\w.]", "", no_spaces)
+    output = []
+    data = regex.findall(r"\X", filename)
+    for char in data:
+        if emoji.is_emoji(char):
+            output.append(char)
+        else:
+            no_spaces = str(char).strip().replace(" ", "_")
+            output.append(re.sub(r"(?u)[^-\w.]", "", no_spaces))
+
+    cleaned_with_emojis = "".join(output)
+    return cleaned_with_emojis
 
 
 def extract_filename(filepath, include_extension=False):
