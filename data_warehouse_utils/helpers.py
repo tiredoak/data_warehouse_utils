@@ -5,6 +5,9 @@ import re
 import unicodedata
 from pathlib import Path
 
+import emoji
+import regex
+
 
 def camel_to_snake_case(s):
     """
@@ -41,9 +44,21 @@ def clean_filename(filename):
 
     >>> clean_filename("ContinuumSectionResponseV1_0.json")
     'ContinuumSectionResponseV1_0.json'
+
+    >>> clean_filename("🐮.json")
+    '🐮.json'
     """
-    no_spaces = str(filename).strip().replace(" ", "_")
-    return re.sub(r"(?u)[^-\w.]", "", no_spaces)
+    output = []
+    data = regex.findall(r"\X", filename)
+    for char in data:
+        if emoji.is_emoji(char):
+            output.append(char)
+        else:
+            no_spaces = str(char).replace(" ", "_").strip()
+            output.append(re.sub(r"(?u)[^-\w.]", "", no_spaces))
+
+    cleaned_with_emojis = "".join(output)
+    return cleaned_with_emojis
 
 
 def extract_filename(filepath, include_extension=False):
@@ -247,29 +262,6 @@ def replace_diacritics(text):
     # Replace any characters whose category is "Mn" (Mark, Nonspacing) with an empty string
     cleaned = "".join(c for c in normalized if not unicodedata.category(c) == "Mn")
     return cleaned
-
-
-def pre_process_whatsapp_filename(gcs_raw_filepath):
-    """
-    Given a raw filepath in GCS for a WhatsApp chat, return the pre_processed filename
-
-    :param gcs_raw_filepath: string
-    :return: string
-
-    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - Gonçalo Miranda/_chat.txt")
-    'whatsapp/chats/goncalo_miranda/chat.json'
-
-    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - António Bênção/_chat.txt")
-    'whatsapp/chats/antonio_bencao/chat.json'
-    """
-    pattern = r"whatsapp\/chats\/WhatsApp\WChat\W-\W(.*)\/.*(chat)\.txt"
-    matches = re.match(pattern, gcs_raw_filepath)
-    entity = matches.group(1)
-    filename = matches.group(2)
-
-    entity = replace_diacritics(entity)
-    entity = clean_filename(entity.lower())
-    return os.path.join("whatsapp", "chats", entity, filename + ".json")
 
 
 if __name__ == "__main__":
