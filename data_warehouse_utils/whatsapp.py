@@ -72,8 +72,11 @@ def pre_process_whatsapp_filename(gcs_raw_filepath):
 
     >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - António Bênção/_chat.txt")
     'whatsapp/chats/antonio_bencao/chat.json'
+
+    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - 🐮/_chat.txt")
+    'whatsapp/chats/🐮/chat.json'
     """
-    pattern = r"whatsapp\/chats\/WhatsApp\WChat\W-\W(.*)\/.*(chat)\.txt"
+    pattern = r"whatsapp\/chats\/WhatsApp\WChat\W-\W(.*)\/_(chat)\.txt"
     matches = re.match(pattern, gcs_raw_filepath)
     entity = matches.group(1)
     filename = matches.group(2)

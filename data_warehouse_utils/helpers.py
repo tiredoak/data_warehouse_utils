@@ -54,7 +54,7 @@ def clean_filename(filename):
         if emoji.is_emoji(char):
             output.append(char)
         else:
-            no_spaces = str(char).strip().replace(" ", "_")
+            no_spaces = str(char).replace(" ", "_").strip()
             output.append(re.sub(r"(?u)[^-\w.]", "", no_spaces))
 
     cleaned_with_emojis = "".join(output)
