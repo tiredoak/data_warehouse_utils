@@ -1,5 +1,8 @@
 import doctest
+import os
 import re
+
+from data_warehouse_utils.helpers import clean_filename, replace_diacritics
 
 
 def is_complete_message(s):
@@ -55,6 +58,29 @@ def parse_message(s):
     content = match.group(4)
     # Create a dictionary with the extracted data
     return {"timestamp": timestamp, "author": author, "content": content}
+
+
+def pre_process_whatsapp_filename(gcs_raw_filepath):
+    """
+    Given a raw filepath in GCS for a WhatsApp chat, return the pre_processed filename
+
+    :param gcs_raw_filepath: string
+    :return: string
+
+    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - Gonçalo Miranda/_chat.txt")
+    'whatsapp/chats/goncalo_miranda/chat.json'
+
+    >>> pre_process_whatsapp_filename("whatsapp/chats/WhatsApp Chat - António Bênção/_chat.txt")
+    'whatsapp/chats/antonio_bencao/chat.json'
+    """
+    pattern = r"whatsapp\/chats\/WhatsApp\WChat\W-\W(.*)\/.*(chat)\.txt"
+    matches = re.match(pattern, gcs_raw_filepath)
+    entity = matches.group(1)
+    filename = matches.group(2)
+
+    entity = replace_diacritics(entity)
+    entity = clean_filename(entity.lower())
+    return os.path.join("whatsapp", "chats", entity, filename + ".json")
 
 
 if __name__ == "__main__":
