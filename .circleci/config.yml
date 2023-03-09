@@ -6,11 +6,10 @@ jobs:
       - image: cimg/python:3.9
     steps:
       - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       poetry install -vvv
-      #       cat /home/circleci/.cache/pypoetry/virtualenvs/*/log/activate.log
+      - run:
+          name: Install dependencies
+          command: |
+            pip install isort black doctest
       - run:
           name: Run isort
           command: |
