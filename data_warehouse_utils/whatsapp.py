@@ -49,6 +49,9 @@ def parse_message(s):
 
     >>> parse_message("[2021-01-01, 00:00:00] Author: Message")
     {'timestamp': '2021-01-01 00:00:00', 'author': 'Author', 'content': 'Message'}
+
+    >>> parse_message("[2021-01-01, 00:00:00] Author: Some emojis 🐮")
+    {'timestamp': '2021-01-01 00:00:00', 'author': 'Author', 'content': 'Some emojis 🐮'}
     """
     pattern = r"\[(\d{4}-\d{2}-\d{2}),(\W\d{2}:\d{2}:\d{2})]\W(.*):\W(.*)"
     # Use regex to extract the timestamp, author, and content from the input string
