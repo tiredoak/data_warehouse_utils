@@ -46,7 +46,10 @@ def read_blob_from_gcs(bucket_name, file_name):
 
 
 def copy_blob(
-    bucket_name, blob_name, destination_bucket_name, destination_blob_name,
+    bucket_name,
+    blob_name,
+    destination_bucket_name,
+    destination_blob_name,
 ):
     """
     Copies files from one GCS bucket to another
