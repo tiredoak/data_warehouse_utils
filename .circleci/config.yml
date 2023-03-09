@@ -7,6 +7,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: |
+            poetry install
+            cat /home/circleci/.cache/pypoetry/virtualenvs/*/log/activate.log
+      - run:
           name: Run isort
           command: |
             isort --check-only --diff .
