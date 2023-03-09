@@ -1,0 +1,20 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/project
+    docker:
+      - image: cimg/python:3.8.4
+    steps:
+      - checkout
+      - run:
+          name: Run isort
+          command: |
+            isort --check-only --diff .
+      - run:
+          name: Run black
+          command: |
+            black --check --diff .
+      - run:
+          name: Run tests
+          command: |
+            pytest --doctest-modules
