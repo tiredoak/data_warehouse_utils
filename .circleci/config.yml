@@ -10,9 +10,10 @@ jobs:
           name: Install the latest version of Poetry
           command: |
             curl -sSL https://install.python-poetry.org | python3 -
+            echo $(poetry --version)
       - run:
           name: Install the Poetry dependencies
-          command: poetry install
+          command: poetry install -vvv
       - run:
           name: Run isort
           command: |
