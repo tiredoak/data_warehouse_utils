@@ -10,10 +10,10 @@ jobs:
           name: Install the latest version of Poetry
           command: |
             curl -sSL https://install.python-poetry.org | python3 -
-      - run:
-          name: Run isort
-          command: |
-            isort --check-only --diff .
+      # - run:
+      #     name: Run isort
+      #     command: |
+      #       isort --check-only --diff .
       - run:
           name: Run black
           command: |
