@@ -1,28 +1,18 @@
 version: 2.1
+
+orbs:
+  poetry: talkiq/poetry@4.0.0
+
 jobs:
   build:
-    working_directory: ~/project
-    docker:
-      - image: cimg/python:3.9
+    executor: python@3.9
     steps:
       - checkout
+      - poetry/install
       - run:
-          name: Install the latest version of Poetry
-          command: |
-            curl -sSL https://install.python-poetry.org | python3 -
-            echo $(poetry --version)
-      - run:
-          name: Install the Poetry dependencies
-          command: poetry install -vvv
-      - run:
-          name: Run isort
-          command: |
-            isort --check-only --diff .
-      - run:
-          name: Run black
-          command: |
-            black --check --diff .
-      - run:
-          name: Run tests
-          command: |
-            pytest --doctest-modules
+          command: pytest --doctest-modules
+
+workflows:
+  build-and-test:
+    jobs:
+      - build
